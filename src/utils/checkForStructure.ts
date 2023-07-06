@@ -30,7 +30,7 @@ export const checkForStructure = (
 		// 'src/assets/redux',
 		// 'src/assets/styles',
 
-		'src/media',
+		// 'src/media',
 	];
 
 	return {

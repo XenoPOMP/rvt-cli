@@ -8,7 +8,7 @@ export default class New extends Command {
 
 	static examples = [
 		'<%= config.bin %> <%= command.id %> component - create new component',
-		// '<%= config.bin %> <%= command.id %> ui - create new UI component',
+		'<%= config.bin %> <%= command.id %> ui - create new UI component',
 	];
 
 	static flags = {
@@ -53,24 +53,45 @@ export default class New extends Command {
 			// this.error('Project structure doesn`t match react-vite-template.');
 		}
 
+		const getCorrectComponentName = (): string => {
+			/** Name with correction. */
+			const correctedName = name
+				.split(/\W/gi)
+				.map(
+					part => `${part.at(0)?.toUpperCase()}${part.slice(1, part.length)}`,
+				)
+				.join('');
+
+			/** Wrong pattern provided. */
+			if (!/^([A-Z][a-z]*)+$/.test(name)) {
+				const warningMessage = `Name doesn\`t satisfy template (${colors.italic(
+					`${correctedName}`,
+				)} expected, but ${colors.italic(
+					name,
+				)} provided). Formatted variant will be used.`;
+
+				this.log(inlinePrefix(warningMessage, 'warning'));
+			}
+
+			return correctedName;
+		};
+
 		switch (type) {
 			case 'component': {
-				/** Check for correct case. */
-				if (!/^([A-Z][a-z]*)+$/.test(name)) {
-					this.error(
-						`Name is not satisfies template (${colors.italic(
-							`${name
-								.split(/\W/gi)
-								.map(
-									part =>
-										`${part.at(0)?.toUpperCase()}${part.slice(1, part.length)}`,
-								)
-								.join('')}`,
-						)} expected, but ${colors.italic(name)} provided).`,
-					);
-				}
+				this.log(
+					`Trying to create component ${colors.italic(
+						getCorrectComponentName(),
+					)}.`,
+				);
+				break;
+			}
 
-				this.log(`Trying to create component ${name}.`);
+			case 'ui': {
+				this.log(
+					`Trying to create UI component ${colors.italic(
+						getCorrectComponentName(),
+					)}.`,
+				);
 				break;
 			}
 
