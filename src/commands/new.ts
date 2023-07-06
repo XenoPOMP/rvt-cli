@@ -1,7 +1,7 @@
 import { Args, Command, Flags } from '@oclif/core';
 
 import { checkForStructure } from '../utils/checkForStructure';
-import { inlinePrefix } from '../utils/inlinePrefix';
+import { colors, inlinePrefix } from '../utils/inlinePrefix';
 
 export default class New extends Command {
 	static description = 'Generate entity';
@@ -50,11 +50,26 @@ export default class New extends Command {
 			});
 
 			/** Final error message. */
-			this.error('Project structure doesn`t match react-vite-template.');
+			// this.error('Project structure doesn`t match react-vite-template.');
 		}
 
 		switch (type) {
 			case 'component': {
+				/** Check for correct case. */
+				if (!/^([A-Z][a-z]*)+$/.test(name)) {
+					this.error(
+						`Name is not satisfies template (${colors.italic(
+							`${name
+								.split(/\W/gi)
+								.map(
+									part =>
+										`${part.at(0)?.toUpperCase()}${part.slice(1, part.length)}`,
+								)
+								.join('')}`,
+						)} expected, but ${colors.italic(name)} provided).`,
+					);
+				}
+
 				this.log(`Trying to create component ${name}.`);
 				break;
 			}
