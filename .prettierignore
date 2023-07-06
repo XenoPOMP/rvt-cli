@@ -1,0 +1,19 @@
+# Declaration files
+*.d.ts
+
+# Media files
+*.svg
+*.png
+*.jpg
+
+# CSS files
+*.scss
+
+# Build
+bin/*
+dist/*
+
+# IDE`s folders
+.idea/*
+.github/*
+.vscode/*
