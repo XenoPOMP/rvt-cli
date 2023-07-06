@@ -40,13 +40,16 @@ export default class New extends Command {
 		const correctChecking: ReturnType<typeof checkForStructure> =
 			checkForStructure(PROJECT_DIR);
 
+		/** If directory structure is not correct, write missing entities. */
 		if (!correctChecking.correct) {
 			this.log('Missing entities:');
 
+			/** Write each missing entity. */
 			correctChecking.missing?.forEach(missingEntity => {
 				this.log(inlinePrefix(missingEntity, 'missing'));
 			});
 
+			/** Final error message. */
 			this.error('Project structure doesn`t match react-vite-template.');
 		}
 
