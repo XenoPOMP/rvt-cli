@@ -4,6 +4,7 @@ import * as path from 'path';
 export interface Configuration {
 	componentGeneration?: {
 		createScssModule?: boolean;
+		createPropInterface?: boolean;
 	};
 }
 
@@ -16,6 +17,7 @@ export const config: Configuration = (() => {
 	let defaultConfig: Configuration = {
 		componentGeneration: {
 			createScssModule: true,
+			createPropInterface: true,
 		},
 	};
 
