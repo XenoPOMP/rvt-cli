@@ -5,7 +5,7 @@ import * as path from 'path';
 import { checkForStructure } from '../utils/checkForStructure';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
-import { Config } from '../types/Config';
+import { Configuration, config } from '../types/Configuration';
 
 export default class New extends Command {
 	static description = 'Generate entity';
@@ -41,11 +41,7 @@ export default class New extends Command {
 		const { type, name } = args;
 
 		/** CLI config. */
-		let config: Config = {
-			componentGeneration: {
-				createScssModule: true,
-			},
-		};
+		// let config: Config = defaultConfig;
 
 		/** Checking for correct structure. */
 		const correctChecking: ReturnType<typeof checkForStructure> =
@@ -62,16 +58,6 @@ export default class New extends Command {
 
 			/** Final error message. */
 			// this.error('Project structure doesn`t match react-vite-template.');
-		}
-
-		/** Looking for config */
-		if (fs.existsSync(path.join(PROJECT_DIR, 'rvt.cli.config.json'))) {
-			const preloadedConfig = require(path.join(
-				PROJECT_DIR,
-				'rvt.cli.config.json',
-			));
-
-			config = { ...config, ...preloadedConfig };
 		}
 
 		/**
