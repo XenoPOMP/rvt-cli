@@ -8,8 +8,8 @@ export default class New extends Command {
 	static description = 'Generate entity';
 
 	static examples = [
-		'<%= config.bin %> <%= command.id %> component - create new component',
-		'<%= config.bin %> <%= command.id %> ui - create new UI component',
+		'<%= config.bin %> <%= command.id %> component NAME - create new component',
+		'<%= config.bin %> <%= command.id %> ui NAME - create new UI component',
 	];
 
 	static flags = {
@@ -98,7 +98,9 @@ export default class New extends Command {
 
 			default: {
 				this.error(
-					`Type ${type} is not allowed. Use rvt --help new to see instructions for command.`,
+					`Type ${colors.italic(type)} is not allowed. Use ${colors.bgGreen(
+						'rvt --help new',
+					)} to see instructions for command.`,
 				);
 			}
 		}
