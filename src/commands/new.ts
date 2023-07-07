@@ -1,8 +1,11 @@
 import { Args, Command, Flags } from '@oclif/core';
+import * as fs from 'fs';
+import * as path from 'path';
 
 import { checkForStructure } from '../utils/checkForStructure';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
+import { Config } from '../types/Config';
 
 export default class New extends Command {
 	static description = 'Generate entity';
@@ -37,6 +40,13 @@ export default class New extends Command {
 		const { args, flags } = await this.parse(New);
 		const { type, name } = args;
 
+		/** CLI config. */
+		let config: Config = {
+			componentGeneration: {
+				createScssModule: true,
+			},
+		};
+
 		/** Checking for correct structure. */
 		const correctChecking: ReturnType<typeof checkForStructure> =
 			checkForStructure(PROJECT_DIR);
@@ -54,6 +64,20 @@ export default class New extends Command {
 			// this.error('Project structure doesn`t match react-vite-template.');
 		}
 
+		/** Looking for config */
+		if (fs.existsSync(path.join(PROJECT_DIR, 'rvt.cli.config.json'))) {
+			const preloadedConfig = require(path.join(
+				PROJECT_DIR,
+				'rvt.cli.config.json',
+			));
+
+			config = { ...config, ...preloadedConfig };
+		}
+
+		/**
+		 * This function refactors name according
+		 * to correct template.
+		 */
 		const getCorrectComponentName = (): string => {
 			/** Name with correction. */
 			const correctedName = name
