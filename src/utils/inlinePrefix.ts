@@ -1,4 +1,4 @@
-export const colors = require('cli-colors');
+import { colors } from './colors';
 
 const prefixes: Record<
 	string,
@@ -20,17 +20,24 @@ const prefixes: Record<
 			return colors.yellow(text);
 		},
 	},
+
+	create: {
+		text: 'create',
+		func: text => {
+			return colors.green(text);
+		},
+	},
 };
 
 /**
  * Inline prefix to log message.
  *
  * @param str         message string.
- * @param prefix      prefix name ('missing' | 'warning').
+ * @param prefix      prefix name ('missing' | 'warning' | 'create').
  */
 export const inlinePrefix = (
 	str?: string,
-	prefix?: 'missing' | 'warning',
+	prefix?: 'missing' | 'warning' | 'create',
 ): string => {
 	/** Get selected prefix according to arguments. */
 	const selectedPrefix = prefix !== undefined ? prefixes[prefix] : undefined;

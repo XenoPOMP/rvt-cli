@@ -1,7 +1,8 @@
 import { Args, Command, Flags } from '@oclif/core';
 
 import { checkForStructure } from '../utils/checkForStructure';
-import { colors, inlinePrefix } from '../utils/inlinePrefix';
+import { inlinePrefix } from '../utils/inlinePrefix';
+import { colors } from '../utils/colors';
 
 export default class New extends Command {
 	static description = 'Generate entity';
