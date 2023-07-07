@@ -32,8 +32,8 @@ const prefixes: Record<
 /**
  * Inline prefix to log message.
  *
- * @param str         message string.
- * @param prefix      prefix name ('missing' | 'warning' | 'create').
+ * @param {string} [str]      message string.
+ * @param [prefix]            prefix name ('missing' | 'warning' | 'create').
  */
 export const inlinePrefix = (
 	str?: string,
