@@ -1,11 +1,11 @@
-import { Args, Command, Flags } from '@oclif/core';
+import { Args, Command } from '@oclif/core';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { checkForStructure } from '../utils/checkForStructure';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
-import { Configuration, config } from '../types/Configuration';
+import { config } from '../types/Configuration';
 import { fileExists } from '../utils/fileExists';
 
 export default class New extends Command {
