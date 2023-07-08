@@ -87,13 +87,77 @@ export default class New extends Command {
 			return correctedName;
 		};
 
+		const { componentGeneration } = config;
+
+		/** Content of generated component. */
+		const componentContent: string = [
+			"import cn from 'classnames';",
+			"import { FC } from 'react';",
+			'',
+			componentGeneration?.createScssModule
+				? `import styles from './${getCorrectComponentName()}.module.scss';`
+				: '',
+			componentGeneration?.createPropInterface
+				? `import type { ${getCorrectComponentName()}Props } from './${getCorrectComponentName()}.props';`
+				: '',
+			'',
+			`const ${getCorrectComponentName()}: FC<${
+				componentGeneration?.createPropInterface
+					? `${getCorrectComponentName()}Props`
+					: '{}'
+			}> = ({}) => {`,
+			'\t' + `return <div></div>;`,
+			'};',
+			'',
+			`export default ${getCorrectComponentName()};`,
+		]
+			.join('\n')
+			.replace(/\n{2,}/gi, '\n');
+
+		/** Component`s prop interface content. */
+		const componentInterfaceContent = `export interface ${getCorrectComponentName()}Props {};`;
+
+		/** Paths of generating files. */
+		const generatingPaths = ((
+			cwd = PROJECT_DIR,
+			name = getCorrectComponentName(),
+		) => {
+			return {
+				component: {
+					main: path.join(cwd, 'assets/components', `${name}/${name}.tsx`),
+
+					styles: path.join(
+						cwd,
+						'assets/components',
+						`${name}/${name}.module.scss`,
+					),
+
+					props: path.join(
+						cwd,
+						'assets/components',
+						`${name}/${name}.props.ts`,
+					),
+				},
+			};
+		})();
+
+		const createFile = require('create-file');
+
 		switch (type) {
 			case 'component': {
-				this.log(
-					`Trying to create component ${colors.italic(
-						getCorrectComponentName(),
-					)}.`,
+				/** Attempting to write main file. */
+				createFile(
+					generatingPaths.component.main,
+					componentContent,
+					(err: any) => {
+						if (err) {
+							this.error(err);
+						}
+
+						this.log(inlinePrefix(generatingPaths.component.main, 'create'));
+					},
 				);
+
 				break;
 			}
 

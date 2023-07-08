@@ -20,7 +20,8 @@
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.4.7",
-    "cli-colors": "^0.0.2"
+    "cli-colors": "^0.0.2",
+    "create-file": "^1.0.1"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.25",

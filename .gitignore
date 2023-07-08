@@ -19,3 +19,6 @@ oclif.manifest.json
 
 # Un-ingored files
 !.vscode/launch.json
+
+# Ignore generated files
+**/src/assets
