@@ -27,17 +27,24 @@ const prefixes: Record<
 			return colors.green(text);
 		},
 	},
+
+	update: {
+		text: 'update',
+		func: text => {
+			return colors.cyan(text);
+		},
+	},
 };
 
 /**
  * Inline prefix to log message.
  *
  * @param {string} [str]      message string.
- * @param [prefix]            prefix name ('missing' | 'warning' | 'create').
+ * @param [prefix]            prefix name ('missing' | 'warning' | 'create' | 'update').
  */
 export const inlinePrefix = (
 	str?: string,
-	prefix?: 'missing' | 'warning' | 'create',
+	prefix?: 'missing' | 'warning' | 'create' | 'update',
 ): string => {
 	/** Get selected prefix according to arguments. */
 	const selectedPrefix = prefix !== undefined ? prefixes[prefix] : undefined;

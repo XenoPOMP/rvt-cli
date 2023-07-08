@@ -6,6 +6,7 @@ import { checkForStructure } from '../utils/checkForStructure';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
 import { Configuration, config } from '../types/Configuration';
+import { fileExists } from '../utils/fileExists';
 
 export default class New extends Command {
 	static description = 'Generate entity';
@@ -93,14 +94,14 @@ export default class New extends Command {
 		const componentContent: string = [
 			"import cn from 'classnames';",
 			"import { FC } from 'react';",
-			'',
+			' ',
 			componentGeneration?.createScssModule
 				? `import styles from './${getCorrectComponentName()}.module.scss';`
 				: '',
 			componentGeneration?.createPropInterface
 				? `import type { ${getCorrectComponentName()}Props } from './${getCorrectComponentName()}.props';`
 				: '',
-			'',
+			' ',
 			`const ${getCorrectComponentName()}: FC<${
 				componentGeneration?.createPropInterface
 					? `${getCorrectComponentName()}Props`
@@ -108,7 +109,7 @@ export default class New extends Command {
 			}> = ({}) => {`,
 			'\t' + `return <div></div>;`,
 			'};',
-			'',
+			' ',
 			`export default ${getCorrectComponentName()};`,
 		]
 			.join('\n')
@@ -124,49 +125,137 @@ export default class New extends Command {
 		) => {
 			return {
 				component: {
-					main: path.join(cwd, 'assets/components', `${name}/${name}.tsx`),
+					main: path.join(cwd, 'src/assets/components', `${name}/${name}.tsx`),
 
 					styles: path.join(
 						cwd,
-						'assets/components',
+						'src/assets/components',
 						`${name}/${name}.module.scss`,
 					),
 
 					props: path.join(
 						cwd,
-						'assets/components',
+						'src/assets/components',
+						`${name}/${name}.props.ts`,
+					),
+				},
+				ui: {
+					main: path.join(
+						cwd,
+						'src/assets/components/ui',
+						`${name}/${name}.tsx`,
+					),
+
+					styles: path.join(
+						cwd,
+						'src/assets/components/ui',
+						`${name}/${name}.module.scss`,
+					),
+
+					props: path.join(
+						cwd,
+						'src/assets/components/ui',
 						`${name}/${name}.props.ts`,
 					),
 				},
 			};
 		})();
 
+		/** This function creates files. */
 		const createFile = require('create-file');
 
-		switch (type) {
-			case 'component': {
-				/** Attempting to write main file. */
-				createFile(
-					generatingPaths.component.main,
-					componentContent,
-					(err: any) => {
+		/** This function creates components. */
+		const createComponent = (
+			type: keyof Pick<typeof generatingPaths, 'component' | 'ui'>,
+		) => {
+			/** Generating main file. */
+			fileExists(generatingPaths[type].main)
+				.then(() => {
+					fs.writeFile(generatingPaths[type].main, componentContent, err => {
 						if (err) {
 							this.error(err);
 						}
 
-						this.log(inlinePrefix(generatingPaths.component.main, 'create'));
-					},
-				);
+						this.log(inlinePrefix(generatingPaths[type].main, 'update'));
+					});
+				})
+				.catch(() => {
+					createFile(
+						generatingPaths[type].main,
+						componentContent,
+						(err: any) => {
+							if (err) {
+								this.error(err);
+							}
 
+							this.log(inlinePrefix(generatingPaths[type].main, 'create'));
+						},
+					);
+				});
+
+			/** Generate prop interface according to config. */
+			if (config.componentGeneration?.createPropInterface) {
+				fileExists(generatingPaths[type].props)
+					.then(() => {
+						fs.writeFile(
+							generatingPaths[type].props,
+							componentInterfaceContent,
+							err => {
+								if (err) {
+									this.error(err);
+								}
+
+								this.log(inlinePrefix(generatingPaths[type].props, 'update'));
+							},
+						);
+					})
+					.catch(() => {
+						createFile(
+							generatingPaths[type].props,
+							componentInterfaceContent,
+							(err: any) => {
+								if (err) {
+									this.error(err);
+								}
+
+								this.log(inlinePrefix(generatingPaths[type].props, 'create'));
+							},
+						);
+					});
+			}
+
+			/** Generate stylesheet according to config. */
+			if (config.componentGeneration?.createScssModule) {
+				fileExists(generatingPaths[type].styles)
+					.then(() => {
+						fs.writeFile(generatingPaths[type].styles, '', err => {
+							if (err) {
+								this.error(err);
+							}
+
+							this.log(inlinePrefix(generatingPaths[type].styles, 'update'));
+						});
+					})
+					.catch(() => {
+						createFile(generatingPaths[type].styles, '', (err: any) => {
+							if (err) {
+								this.error(err);
+							}
+
+							this.log(inlinePrefix(generatingPaths[type].styles, 'create'));
+						});
+					});
+			}
+		};
+
+		switch (type) {
+			case 'component': {
+				createComponent('component');
 				break;
 			}
 
 			case 'ui': {
-				this.log(
-					`Trying to create UI component ${colors.italic(
-						getCorrectComponentName(),
-					)}.`,
-				);
+				createComponent('ui');
 				break;
 			}
 
