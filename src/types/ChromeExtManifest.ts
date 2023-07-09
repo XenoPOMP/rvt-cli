@@ -172,7 +172,7 @@ type OptionalCommands = {
 /**
  * See full docs for permissions [here](https://developer.chrome.com/docs/extensions/mv3/declare_permissions/#permissions).
  */
-type Permissions = Partial<
+export type Permissions = Partial<
 	Record<
 		| 'permissions'
 		| 'optional_permissions'

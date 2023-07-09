@@ -1,9 +1,13 @@
-import { Args, Command, Flags, ux } from '@oclif/core';
+import { Args, Command, Flags } from '@oclif/core';
 import * as path from 'path';
 import { writeFile } from 'fs/promises';
 
 import { allowedInitEntities, InitEntity } from '../types/InitEntity';
-import { ChromeExtManifest } from '../types/ChromeExtManifest';
+import {
+	ChromeExtManifest,
+	Permission,
+	Permissions,
+} from '../types/ChromeExtManifest';
 import { fileExists } from '../utils/fileExists';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { createFile } from '../utils/createFile';
@@ -56,36 +60,70 @@ export default class Init extends Command {
 				this.log(colors.green('Chrome extension generation utility.'));
 
 				/** Prompt name from console. */
-				manifest.name = (await ux.prompt('Name'))
-					.replace(/\W/gi, '-')
-					.toLowerCase();
+				manifest.name = await inquirer.input({
+					message: 'Enter name:',
+					default: 'my-chrome-extension',
+					transformer: (input, { isFinal }) => {
+						return isFinal ? input.replace(/\W/gi, '-').toLowerCase() : input;
+					},
+				});
 
 				/** Prompt desc from console. */
-				manifest.description = await ux.prompt('Description', {
-					required: false,
+				manifest.description = await inquirer.input({
+					message: 'Enter description:',
 				});
 
 				/** Prompt version from console. */
-				manifest.version = await ux.prompt(
-					`${colors.green('?')} ${colors.bold('Version')}`,
-					{
-						default: manifest.version,
-						required: false,
+				manifest.version = await inquirer.input({
+					message: 'Enter version:',
+					default: '0.0.0',
+					validate: input => {
+						return /^(\d)(\.?\d\.?)+/gi.test(input);
 					},
-				);
+				});
 
-				// let permissionPreset = await inquirer.prompt([
-				// 	{
-				// 		name: 'preset',
-				// 		message: 'select permission preset',
-				// 		type: 'list',
-				// 		choices: [
-				// 			{ name: 'Preset #1' },
-				// 			{ name: 'Preset #2' },
-				// 			{ name: 'Preset #3' },
-				// 		],
-				// 	},
-				// ]);
+				/** Select preset from list. */
+				const presetSelect = await inquirer.select<Permissions>({
+					message: 'Select permission preset:',
+					choices: [
+						{
+							name: 'Focus Mode',
+							value: {
+								permissions: ['scripting', 'activeTab'],
+								optional_permissions: [],
+								host_permissions: [],
+								optional_host_permissions: [],
+							},
+							description:
+								"Enable reading mode on Chrome's official Extensions and Chrome Web Store documentation.",
+						},
+
+						{
+							name: 'Tabs Manager',
+							value: {
+								permissions: ['tabGroups'],
+								optional_permissions: [],
+								host_permissions: [],
+								optional_host_permissions: [],
+							},
+							description:
+								'Organizes your Chrome extension and Chrome Web store documentation tabs.',
+						},
+
+						{
+							name: 'None',
+							value: {
+								permissions: [],
+								optional_permissions: [],
+								host_permissions: [],
+								optional_host_permissions: [],
+							},
+							description: 'No additional permissions.',
+						},
+					],
+				});
+				/** Spread preset into manifest. */
+				manifest = { ...manifest, ...presetSelect };
 
 				/** Path to generated manifest file. */
 				const pathToManifest = path.join(
@@ -102,17 +140,14 @@ export default class Init extends Command {
 				packageJson.scripts['afterbuild'] = `copy ${pathToManifest} dist`;
 
 				/** Confirmation. */
-				this.log(`${colors.green('? ')} Please, confirm:`);
-
-				const confirm: boolean = await ux.confirm(
-					`${colors.green('? ')} Creating extension ${colors.green(
-						`${manifest.name}@${manifest.version}?`,
-					)} (y/n)`,
-				);
-
+				const confirm: boolean = await inquirer.confirm({
+					message: `Confirm ${colors.green(
+						`${manifest.name}@${manifest.version}`,
+					)}?`,
+				});
 				/** Close CLI if not confirmed. */
 				if (!confirm) {
-					ux.exit(1);
+					this.exit(1);
 				}
 
 				/** Dev mode code. */
