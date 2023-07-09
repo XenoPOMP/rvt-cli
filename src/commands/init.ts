@@ -69,8 +69,12 @@ export default class Init extends Command {
 					PROJECT_DIR,
 					'src/manifests/chrome/manifest.json',
 				);
+				/** Path to manifest`s icons source. */
+				const pathToImages = path.join(pathToManifest, '../');
+				/** Import package json. */
+				const packageJson = require(path.join(PROJECT_DIR, './package.json'));
 
-				console.log(manifest);
+				console.log(packageJson.scripts);
 
 				/** Create or update manifest file. */
 				// fileExists(pathToManifest)
