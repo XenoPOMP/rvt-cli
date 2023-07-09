@@ -1,4 +1,5 @@
 import { Args, Command } from '@oclif/core';
+import { writeFile } from 'fs/promises';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -7,6 +8,7 @@ import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
 import { config } from '../types/Configuration';
 import { fileExists } from '../utils/fileExists';
+import { createFile } from '../utils/createFile';
 
 export default class New extends Command {
 	static description = 'Generate entity';
@@ -16,12 +18,7 @@ export default class New extends Command {
 		'<%= config.bin %> <%= command.id %> ui NAME - create new UI component',
 	];
 
-	static flags = {
-		// // flag with a value (-n, --name=VALUE)
-		// name: Flags.string({char: 'n', description: 'name to print'}),
-		// // flag with no value (-f, --force)
-		// force: Flags.boolean({char: 'f'}),
-	};
+	static flags = {};
 
 	static args = {
 		type: Args.string({
@@ -161,9 +158,6 @@ export default class New extends Command {
 			};
 		})();
 
-		/** This function creates files. */
-		const createFile = require('create-file');
-
 		/** This function creates components. */
 		const createComponent = (
 			type: keyof Pick<typeof generatingPaths, 'component' | 'ui'>,
@@ -171,56 +165,44 @@ export default class New extends Command {
 			/** Generating main file. */
 			fileExists(generatingPaths[type].main)
 				.then(() => {
-					fs.writeFile(generatingPaths[type].main, componentContent, err => {
-						if (err) {
+					writeFile(generatingPaths[type].main, componentContent)
+						.then(() => {
+							this.log(inlinePrefix(generatingPaths[type].main, 'update'));
+						})
+						.catch(err => {
 							this.error(err);
-						}
-
-						this.log(inlinePrefix(generatingPaths[type].main, 'update'));
-					});
+						});
 				})
 				.catch(() => {
-					createFile(
-						generatingPaths[type].main,
-						componentContent,
-						(err: any) => {
-							if (err) {
-								this.error(err);
-							}
-
+					createFile(generatingPaths[type].main, componentContent)
+						.then(() => {
 							this.log(inlinePrefix(generatingPaths[type].main, 'create'));
-						},
-					);
+						})
+						.catch(err => {
+							this.error(err);
+						});
 				});
 
 			/** Generate prop interface according to config. */
 			if (config.componentGeneration?.createPropInterface) {
 				fileExists(generatingPaths[type].props)
 					.then(() => {
-						fs.writeFile(
-							generatingPaths[type].props,
-							componentInterfaceContent,
-							err => {
-								if (err) {
-									this.error(err);
-								}
-
+						writeFile(generatingPaths[type].props, componentInterfaceContent)
+							.then(() => {
 								this.log(inlinePrefix(generatingPaths[type].props, 'update'));
-							},
-						);
+							})
+							.catch(err => {
+								this.error(err);
+							});
 					})
 					.catch(() => {
-						createFile(
-							generatingPaths[type].props,
-							componentInterfaceContent,
-							(err: any) => {
-								if (err) {
-									this.error(err);
-								}
-
+						createFile(generatingPaths[type].props, componentInterfaceContent)
+							.then(() => {
 								this.log(inlinePrefix(generatingPaths[type].props, 'create'));
-							},
-						);
+							})
+							.catch(err => {
+								this.error(err);
+							});
 					});
 			}
 
@@ -228,22 +210,22 @@ export default class New extends Command {
 			if (config.componentGeneration?.createScssModule) {
 				fileExists(generatingPaths[type].styles)
 					.then(() => {
-						fs.writeFile(generatingPaths[type].styles, '', err => {
-							if (err) {
+						writeFile(generatingPaths[type].styles, '')
+							.then(() => {
+								this.log(inlinePrefix(generatingPaths[type].styles, 'update'));
+							})
+							.catch(err => {
 								this.error(err);
-							}
-
-							this.log(inlinePrefix(generatingPaths[type].styles, 'update'));
-						});
+							});
 					})
 					.catch(() => {
-						createFile(generatingPaths[type].styles, '', (err: any) => {
-							if (err) {
+						createFile(generatingPaths[type].styles, '')
+							.then(() => {
+								this.log(inlinePrefix(generatingPaths[type].styles, 'create'));
+							})
+							.catch(err => {
 								this.error(err);
-							}
-
-							this.log(inlinePrefix(generatingPaths[type].styles, 'create'));
-						});
+							});
 					});
 			}
 		};
