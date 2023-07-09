@@ -25,7 +25,7 @@
     "create-file": "^1.0.1"
   },
   "devDependencies": {
-    "@oclif/test": "^2.3.25",
+    "@oclif/test": "^2.3.27",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/chai": "^4",
     "@types/inquirer": "^9.0.3",
