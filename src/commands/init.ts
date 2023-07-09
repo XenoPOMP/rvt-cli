@@ -67,7 +67,7 @@ export default class Init extends Command {
 				/** Path to generated manifest file. */
 				const pathToManifest = path.join(
 					PROJECT_DIR,
-					'src/manifests/chrome/manifest.json',
+					'.rvt/manifests/chrome/manifest.json',
 				);
 				/** Path to manifest`s icons source. */
 				const pathToImages = path.join(pathToManifest, '../');
