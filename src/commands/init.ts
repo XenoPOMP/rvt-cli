@@ -74,20 +74,30 @@ export default class Init extends Command {
 				/** Import package json. */
 				const packageJson = require(path.join(PROJECT_DIR, './package.json'));
 
-				console.log(packageJson.scripts);
+				/** Re-define scripts. */
+				packageJson.scripts['build'] = 'tsc && vite build && yarn afterbuild';
+				packageJson.scripts['afterbuild'] = `copy ${pathToManifest} dist`;
+
+				/** Update package json. Add new scripts. */
+				writeFile(
+					path.join(PROJECT_DIR, './package.json'),
+					JSON.stringify(packageJson, null, 2),
+				)
+					.then(() => this.log(inlinePrefix('package.json', 'update')))
+					.catch(err => this.error(err));
 
 				/** Create or update manifest file. */
-				// fileExists(pathToManifest)
-				// 	.then(() =>
-				// 		writeFile(pathToManifest, JSON.stringify(manifest))
-				// 			.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'update')))
-				// 			.catch(err => this.error(err)),
-				// 	)
-				// 	.catch(() =>
-				// 		createFile(pathToManifest, JSON.stringify(manifest))
-				// 			.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'create')))
-				// 			.catch(err => this.error(err)),
-				// 	);
+				fileExists(pathToManifest)
+					.then(() =>
+						writeFile(pathToManifest, JSON.stringify(manifest))
+							.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'update')))
+							.catch(err => this.error(err)),
+					)
+					.catch(() =>
+						createFile(pathToManifest, JSON.stringify(manifest, null, 2))
+							.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'create')))
+							.catch(err => this.error(err)),
+					);
 			}
 		}
 	}
