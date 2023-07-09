@@ -22,3 +22,4 @@ oclif.manifest.json
 
 # Ignore generated files
 **/src/assets
+**/src/manifests
