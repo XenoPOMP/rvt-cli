@@ -51,43 +51,7 @@ export default class Init extends Command {
 				this.log(colors.green('Chrome extension generation utility.'));
 
 				/** Prompt data from console. */
-				manifest.name = (
-					await ux.prompt('Name', {
-						default: (() => {
-							let name = '';
-
-							fileExists(
-								path.join(
-									PROJECT_DIR,
-									'src/assets',
-									'redux/reducers/appSettings.slice.ts',
-								),
-							)
-								.then(() => {
-									fs.readFile(
-										path.join(
-											PROJECT_DIR,
-											'src/assets',
-											'redux/reducers/appSettings.slice.ts',
-										),
-										{},
-										(err, data) => {
-											if (!err) {
-												name = data
-													.toString()
-													.split(/(appName: '.*')/gi)
-													.filter(item => /appName: '.*'/gi.test(item))[0]
-													.replace(/((^appName: ')|('$))/gi, '');
-											}
-										},
-									);
-								})
-								.catch(() => {});
-
-							return name;
-						})(),
-					})
-				)
+				manifest.name = (await ux.prompt('Name'))
 					.replace(/\W/gi, '-')
 					.toLowerCase();
 
