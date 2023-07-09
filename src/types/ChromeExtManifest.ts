@@ -6,7 +6,81 @@ type DefaultIcon = {
 	'32'?: string;
 };
 
-export type ChromeExtManifest = {
+/**
+ * See full docs for permissions [here](https://developer.chrome.com/docs/extensions/mv3/declare_permissions/#permissions).
+ */
+export type Permission =
+	| 'activeTab'
+	| 'alarms'
+	| 'background'
+	| 'bookmarks'
+	| 'browsingData'
+	| 'certificateProvider'
+	| 'clipboardRead'
+	| 'clipboardWrite'
+	| 'contentSettings'
+	| 'contextMenus'
+	| 'cookies'
+	| 'debugger'
+	| 'declarativeContent'
+	| 'declarativeNetRequest'
+	| 'declarativeNetRequestWithHostAccess'
+	| 'declarativeNetRequestFeedback'
+	| 'declarativeWebRequest'
+	| 'desktopCapture'
+	| 'documentScan'
+	| 'downloads'
+	| 'enterprise.deviceAttributes'
+	| 'enterprise.hardwarePlatform'
+	| 'enterprise.networkingAttributes'
+	| 'enterprise.platformKeys'
+	| 'experimental'
+	| 'fileBrowserHandler'
+	| 'fileSystemProvider'
+	| 'fontSettings'
+	| 'gcm'
+	| 'geolocation'
+	| 'history'
+	| 'identity'
+	| 'idle'
+	| 'loginState'
+	| 'management'
+	| 'nativeMessaging'
+	| 'notifications'
+	| 'offscreen'
+	| 'pageCapture'
+	| 'platformKeys'
+	| 'power'
+	| 'printerProvider'
+	| 'printing'
+	| 'printingMetrics'
+	| 'privacy'
+	| 'processes'
+	| 'proxy'
+	| 'scripting'
+	| 'search'
+	| 'sessions'
+	| 'sidePanel'
+	| 'storage'
+	| 'system.cpu'
+	| 'system.display'
+	| 'system.memory'
+	| 'system.storage'
+	| 'tabCapture'
+	| 'tabGroups'
+	| 'tabs'
+	| 'topSites'
+	| 'tts'
+	| 'ttsEngine'
+	| 'unlimitedStorage'
+	| 'vpnProvider'
+	| 'wallpaper'
+	| 'webAuthenticationProxy'
+	| 'webNavigation'
+	| 'webRequest'
+	| 'webRequestBlocking';
+
+type RequiredOptions = {
 	// Required
 	/** Version of manifest. Only 3rd is fully supported now. */
 	manifest_version: 3;
@@ -16,7 +90,9 @@ export type ChromeExtManifest = {
 
 	/** Version of extension. */
 	version: string;
+};
 
+type RecommendedOptions = {
 	// Recommended
 	/** Extension`s action. Setup things like default icon etc. */
 	action?: {
@@ -47,7 +123,9 @@ export type ChromeExtManifest = {
 			'128': string;
 		}
 	>;
+};
 
+type OptionalCommands = {
 	// Optional
 	/** Author`s name, email etc. */
 	author?: string;
@@ -90,3 +168,21 @@ export type ChromeExtManifest = {
 	/** Full version name. */
 	version_name?: string;
 };
+
+/**
+ * See full docs for permissions [here](https://developer.chrome.com/docs/extensions/mv3/declare_permissions/#permissions).
+ */
+type Permissions = Partial<
+	Record<
+		| 'permissions'
+		| 'optional_permissions'
+		| 'host_permissions'
+		| 'optional_host_permissions',
+		Permission[]
+	>
+>;
+
+export type ChromeExtManifest = RequiredOptions &
+	RecommendedOptions &
+	OptionalCommands &
+	Permissions;

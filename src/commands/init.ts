@@ -84,6 +84,20 @@ export default class Init extends Command {
 				packageJson.scripts['build'] = 'tsc && vite build && yarn afterbuild';
 				packageJson.scripts['afterbuild'] = `copy ${pathToManifest} dist`;
 
+				/** Confirmation. */
+				this.log(`${colors.green('? ')} Please, confirm:`);
+
+				const confirm: boolean = await ux.confirm(
+					`${colors.green('? ')} Creating extension ${colors.green(
+						`${manifest.name}@${manifest.version}?`,
+					)} (y/n)`,
+				);
+
+				/** Close CLI if not confirmed. */
+				if (!confirm) {
+					ux.exit(1);
+				}
+
 				/** Dev mode code. */
 				if (IS_DEV) {
 					console.log(manifest);
