@@ -10,6 +10,7 @@ import { createFile } from '../utils/createFile';
 import { colors } from '../utils/colors';
 import * as fs from 'fs';
 import { IS_DEV } from '../constants/isDev';
+import { inquirer } from '../utils/inquirer';
 
 export default class Init extends Command {
 	static description = 'describe the command here';
@@ -65,10 +66,26 @@ export default class Init extends Command {
 				});
 
 				/** Prompt version from console. */
-				manifest.version = await ux.prompt('Version', {
-					default: manifest.version,
-					required: false,
-				});
+				manifest.version = await ux.prompt(
+					`${colors.green('?')} ${colors.bold('Version')}`,
+					{
+						default: manifest.version,
+						required: false,
+					},
+				);
+
+				// let permissionPreset = await inquirer.prompt([
+				// 	{
+				// 		name: 'preset',
+				// 		message: 'select permission preset',
+				// 		type: 'list',
+				// 		choices: [
+				// 			{ name: 'Preset #1' },
+				// 			{ name: 'Preset #2' },
+				// 			{ name: 'Preset #3' },
+				// 		],
+				// 	},
+				// ]);
 
 				/** Path to generated manifest file. */
 				const pathToManifest = path.join(

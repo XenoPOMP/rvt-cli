@@ -17,6 +17,7 @@
     "/oclif.manifest.json"
   ],
   "dependencies": {
+    "@inquirer/input": "^1.2.3",
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.4.7",
@@ -27,6 +28,7 @@
     "@oclif/test": "^2.3.25",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/chai": "^4",
+    "@types/inquirer": "^9.0.3",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.38",
     "chai": "^4",
