@@ -9,6 +9,7 @@ import { inlinePrefix } from '../utils/inlinePrefix';
 import { createFile } from '../utils/createFile';
 import { colors } from '../utils/colors';
 import * as fs from 'fs';
+import { IS_DEV } from '../constants/isDev';
 
 export default class Init extends Command {
 	static description = 'describe the command here';
@@ -50,19 +51,29 @@ export default class Init extends Command {
 				 */
 				this.log(colors.green('Chrome extension generation utility.'));
 
-				/** Prompt data from console. */
+				/** Prompt name from console. */
 				manifest.name = (await ux.prompt('Name'))
 					.replace(/\W/gi, '-')
 					.toLowerCase();
 
+				/** Prompt desc from console. */
 				manifest.description = await ux.prompt('Description', {
 					required: false,
 				});
 
+				/** Prompt version from console. */
 				manifest.version = await ux.prompt('Version', {
 					default: manifest.version,
 					required: false,
 				});
+
+				/** Set default popup path. */
+				manifest = {
+					...manifest,
+					action: {
+						default_popup: 'index.html',
+					},
+				};
 
 				/** Path to generated manifest file. */
 				const pathToManifest = path.join(
@@ -78,26 +89,35 @@ export default class Init extends Command {
 				packageJson.scripts['build'] = 'tsc && vite build && yarn afterbuild';
 				packageJson.scripts['afterbuild'] = `copy ${pathToManifest} dist`;
 
-				/** Update package json. Add new scripts. */
-				writeFile(
-					path.join(PROJECT_DIR, './package.json'),
-					JSON.stringify(packageJson, null, 2),
-				)
-					.then(() => this.log(inlinePrefix('package.json', 'update')))
-					.catch(err => this.error(err));
-
-				/** Create or update manifest file. */
-				fileExists(pathToManifest)
-					.then(() =>
-						writeFile(pathToManifest, JSON.stringify(manifest))
-							.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'update')))
-							.catch(err => this.error(err)),
+				/** Dev mode code. */
+				if (IS_DEV) {
+					console.log(manifest);
+				} /** Non-dev code. Writing files. */ else {
+					/** Update package json. Add new scripts. */
+					writeFile(
+						path.join(PROJECT_DIR, './package.json'),
+						JSON.stringify(packageJson, null, 2),
 					)
-					.catch(() =>
-						createFile(pathToManifest, JSON.stringify(manifest, null, 2))
-							.then(() => this.log(inlinePrefix(`${pathToManifest}`, 'create')))
-							.catch(err => this.error(err)),
-					);
+						.then(() => this.log(inlinePrefix('package.json', 'update')))
+						.catch(err => this.error(err));
+
+					/** Create or update manifest file. */
+					fileExists(pathToManifest)
+						.then(() =>
+							writeFile(pathToManifest, JSON.stringify(manifest, null, 2))
+								.then(() =>
+									this.log(inlinePrefix(`${pathToManifest}`, 'update')),
+								)
+								.catch(err => this.error(err)),
+						)
+						.catch(() =>
+							createFile(pathToManifest, JSON.stringify(manifest, null, 2))
+								.then(() =>
+									this.log(inlinePrefix(`${pathToManifest}`, 'create')),
+								)
+								.catch(err => this.error(err)),
+						);
+				}
 			}
 		}
 	}
