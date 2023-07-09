@@ -43,6 +43,9 @@ export default class Init extends Command {
 					description: '',
 					version: '1.0.0',
 					default_locale: 'en',
+					action: {
+						default_popup: 'index.html',
+					},
 				};
 
 				/**
@@ -66,14 +69,6 @@ export default class Init extends Command {
 					default: manifest.version,
 					required: false,
 				});
-
-				/** Set default popup path. */
-				manifest = {
-					...manifest,
-					action: {
-						default_popup: 'index.html',
-					},
-				};
 
 				/** Path to generated manifest file. */
 				const pathToManifest = path.join(
