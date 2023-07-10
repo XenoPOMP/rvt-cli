@@ -126,7 +126,7 @@ export default class Init extends Command {
 				manifest = { ...manifest, ...presetSelect };
 
 				/** Path to generated manifest file. */
-				const relativePathToManifest = '.rvt/manifests/chrome/manifest.json';
+				const relativePathToManifest = '.rvt\\manifests\\chrome\\manifest.json';
 				const pathToManifest = path.join(PROJECT_DIR, relativePathToManifest);
 				/** Path to manifest`s icons source. */
 				const pathToImages = path.join(pathToManifest, '../');
@@ -137,7 +137,7 @@ export default class Init extends Command {
 				packageJson.scripts['build'] = 'tsc && vite build && yarn afterbuild';
 				packageJson.scripts[
 					'afterbuild'
-				] = `copy ${relativePathToManifest} dist`;
+				] = `copy \"${relativePathToManifest}\" dist`;
 
 				/** Confirmation. */
 				const confirm: boolean = await inquirer.confirm({
