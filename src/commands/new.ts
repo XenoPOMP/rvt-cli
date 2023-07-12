@@ -50,7 +50,7 @@ export default class New extends Command {
       });
 
       /** Final error message. */
-      // this.error('Project structure doesn`t match react-vite-template.');
+      this.error('Project structure doesn`t match react-vite-template.');
     }
 
     /** Ask for details. */
