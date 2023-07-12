@@ -10,6 +10,8 @@ import { config } from '../types/Configuration';
 import { fileExists } from '../utils/fileExists';
 import { createFile } from '../utils/createFile';
 import { IS_DEV } from '../constants/isDev';
+import { inquirer } from '../utils/inquirer';
+import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter';
 
 const allowedGeneratingTypes: Record<string, string> = {
   component: 'create new component',
@@ -26,27 +28,13 @@ export default class New extends Command {
 
   static flags = {};
 
-  static args = {
-    type: Args.string({
-      description: 'Type of generating entity',
-      required: true,
-      options: Object.keys(allowedGeneratingTypes),
-    }),
-
-    name: Args.string({
-      description: 'Newborn entity name',
-      required: true,
-    }),
-  };
+  static args = {};
 
   public async run(): Promise<void> {
     const PROJECT_DIR = process.cwd();
 
     const { args, flags } = await this.parse(New);
-    const { type, name } = args;
-
-    /** CLI config. */
-    // let config: Config = defaultConfig;
+    // const { type, name } = args;
 
     /** Checking for correct structure. */
     const correctChecking: ReturnType<typeof checkForStructure> =
@@ -62,8 +50,24 @@ export default class New extends Command {
       });
 
       /** Final error message. */
-      this.error('Project structure doesn`t match react-vite-template.');
+      // this.error('Project structure doesn`t match react-vite-template.');
     }
+
+    /** Ask for details. */
+    const type = await inquirer.select({
+      message: 'Select generating entity type',
+      choices: Object.keys(allowedGeneratingTypes).map(key => {
+        return {
+          name: capitalizeFirstLetter(key),
+          value: key,
+          description: capitalizeFirstLetter(allowedGeneratingTypes[key]),
+        };
+      }),
+    });
+
+    const name = await inquirer.input({
+      message: 'Write name of entity',
+    });
 
     /**
      * This function refactors name according
@@ -73,9 +77,7 @@ export default class New extends Command {
       /** Name with correction. */
       const correctedName = name
         .split(/\W/gi)
-        .map(
-          part => `${part.at(0)?.toUpperCase()}${part.slice(1, part.length)}`,
-        )
+        .map(capitalizeFirstLetter)
         .join('');
 
       /** Wrong pattern provided. */
@@ -101,34 +103,6 @@ export default class New extends Command {
     };
 
     const { componentGeneration } = config;
-
-    /** Content of generated component. */
-    const componentContent: string = [
-      "import cn from 'classnames';",
-      "import { FC } from 'react';",
-      ' ',
-      componentGeneration?.createScssModule
-        ? `import styles from './${getCorrectComponentName()}.module.scss';`
-        : '',
-      componentGeneration?.createPropInterface
-        ? `import type { ${getCorrectComponentName()}Props } from './${getCorrectComponentName()}.props';`
-        : '',
-      ' ',
-      `const ${getCorrectComponentName()}: FC<${
-        componentGeneration?.createPropInterface
-          ? `${getCorrectComponentName()}Props`
-          : '{}'
-      }> = ({}) => {`,
-      '\t' + `return <div></div>;`,
-      '};',
-      ' ',
-      `export default ${getCorrectComponentName()};`,
-    ]
-      .join('\n')
-      .replace(/\n{2,}/gi, '\n');
-
-    /** Component`s prop interface content. */
-    const componentInterfaceContent = `export interface ${getCorrectComponentName()}Props {};`;
 
     /** Paths of generating files. */
     const generatingPaths = ((
@@ -170,105 +144,95 @@ export default class New extends Command {
             `${name}/${name}.props.ts`,
           ),
         },
-        hook: path.join(cwd, 'src/assets/hooks', `${name}.ts`),
+        hook: path.join(cwd, 'src/assets/hooks', `${getCorrectHookName()}.ts`),
       };
     })();
+
+    /** This function creates entity. */
+    const createEntity = (path: string, content: string) => {
+      fileExists(path)
+        .then(() => {
+          writeFile(path, content)
+            .then(() => {
+              this.log(inlinePrefix(path, 'update'));
+            })
+            .catch(this.error);
+        })
+        .catch(() => {
+          createFile(path, content)
+            .then(() => {
+              this.log(inlinePrefix(path, 'create'));
+            })
+            .catch(this.error);
+        });
+    };
 
     /** This function creates components. */
     const createComponent = (
       type: keyof Pick<typeof generatingPaths, 'component' | 'ui'>,
     ) => {
-      /** Generating main file. */
-      fileExists(generatingPaths[type].main)
-        .then(() => {
-          writeFile(generatingPaths[type].main, componentContent)
-            .then(() => {
-              this.log(inlinePrefix(generatingPaths[type].main, 'update'));
-            })
-            .catch(err => {
-              this.error(err);
-            });
-        })
-        .catch(() => {
-          createFile(generatingPaths[type].main, componentContent)
-            .then(() => {
-              this.log(inlinePrefix(generatingPaths[type].main, 'create'));
-            })
-            .catch(err => {
-              this.error(err);
-            });
-        });
+      /** Content of generated component. */
+      const componentContent: string = [
+        "import cn from 'classnames';",
+        "import { FC } from 'react';",
+        ' ',
+        componentGeneration?.createScssModule
+          ? `import styles from './${getCorrectComponentName()}.module.scss';`
+          : '',
+        componentGeneration?.createPropInterface
+          ? `import type { ${getCorrectComponentName()}Props } from './${getCorrectComponentName()}.props';`
+          : '',
+        ' ',
+        `const ${getCorrectComponentName()}: FC<${
+          componentGeneration?.createPropInterface
+            ? `${getCorrectComponentName()}Props`
+            : '{}'
+        }> = ({}) => {`,
+        '\t' + `return <div></div>;`,
+        '};',
+        ' ',
+        `export default ${getCorrectComponentName()};`,
+      ]
+        .join('\n')
+        .replace(/\n{2,}/gi, '\n');
+
+      /** Component`s prop interface content. */
+      const componentInterfaceContent = `export interface ${getCorrectComponentName()}Props {};`;
+
+      createEntity(generatingPaths[type].main, componentContent);
 
       /** Generate prop interface according to config. */
       if (config.componentGeneration?.createPropInterface) {
-        fileExists(generatingPaths[type].props)
-          .then(() => {
-            writeFile(generatingPaths[type].props, componentInterfaceContent)
-              .then(() => {
-                this.log(inlinePrefix(generatingPaths[type].props, 'update'));
-              })
-              .catch(err => {
-                this.error(err);
-              });
-          })
-          .catch(() => {
-            createFile(generatingPaths[type].props, componentInterfaceContent)
-              .then(() => {
-                this.log(inlinePrefix(generatingPaths[type].props, 'create'));
-              })
-              .catch(err => {
-                this.error(err);
-              });
-          });
+        createEntity(generatingPaths[type].props, componentInterfaceContent);
       }
 
       /** Generate stylesheet according to config. */
       if (config.componentGeneration?.createScssModule) {
-        fileExists(generatingPaths[type].styles)
-          .then(() => {
-            writeFile(generatingPaths[type].styles, '')
-              .then(() => {
-                this.log(inlinePrefix(generatingPaths[type].styles, 'update'));
-              })
-              .catch(err => {
-                this.error(err);
-              });
-          })
-          .catch(() => {
-            createFile(generatingPaths[type].styles, '')
-              .then(() => {
-                this.log(inlinePrefix(generatingPaths[type].styles, 'create'));
-              })
-              .catch(err => {
-                this.error(err);
-              });
-          });
+        createEntity(generatingPaths[type].styles, '');
       }
+    };
+
+    /** This function creates hooks. */
+    const createHook = () => {
+      const hookContent = `export const ${name} = () => {};`;
+
+      createEntity(generatingPaths.hook, hookContent);
     };
 
     switch (type) {
       case 'component': {
-        if (!IS_DEV) {
-          createComponent('component');
-        }
-
+        createComponent('component');
         break;
       }
 
       case 'ui': {
-        if (!IS_DEV) {
-          createComponent('ui');
-        }
-
+        createComponent('ui');
         break;
       }
 
-      default: {
-        this.error(
-          `Type ${colors.italic(type)} is not allowed. Use ${colors.bgGreen(
-            'rvt --help new',
-          )} to see instructions for command.`,
-        );
+      case 'hook': {
+        createHook();
+        break;
       }
     }
   }
