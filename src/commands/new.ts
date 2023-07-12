@@ -9,14 +9,20 @@ import { colors } from '../utils/colors';
 import { config } from '../types/Configuration';
 import { fileExists } from '../utils/fileExists';
 import { createFile } from '../utils/createFile';
+import { IS_DEV } from '../constants/isDev';
+
+const allowedGeneratingTypes: Record<string, string> = {
+  component: 'create new component',
+  ui: 'create new UI component',
+  hook: 'create React hook',
+};
 
 export default class New extends Command {
   static description = 'Generate entity';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %> component NAME - create new component',
-    '<%= config.bin %> <%= command.id %> ui NAME - create new UI component',
-  ];
+  static examples = Object.keys(allowedGeneratingTypes).map(key => {
+    return `<%= config.bin %> <%= command.id %> ${key} NAME - ${allowedGeneratingTypes[key]}`;
+  });
 
   static flags = {};
 
@@ -24,6 +30,7 @@ export default class New extends Command {
     type: Args.string({
       description: 'Type of generating entity',
       required: true,
+      options: Object.keys(allowedGeneratingTypes),
     }),
 
     name: Args.string({
@@ -83,6 +90,14 @@ export default class New extends Command {
       }
 
       return correctedName;
+    };
+
+    const getCorrectHookName = (): ReturnType<
+      typeof getCorrectComponentName
+    > => {
+      const convertedName = getCorrectComponentName();
+
+      return `use${getCorrectComponentName()}`;
     };
 
     const { componentGeneration } = config;
@@ -155,6 +170,7 @@ export default class New extends Command {
             `${name}/${name}.props.ts`,
           ),
         },
+        hook: path.join(cwd, 'src/assets/hooks', `${name}.ts`),
       };
     })();
 
@@ -232,12 +248,18 @@ export default class New extends Command {
 
     switch (type) {
       case 'component': {
-        createComponent('component');
+        if (!IS_DEV) {
+          createComponent('component');
+        }
+
         break;
       }
 
       case 'ui': {
-        createComponent('ui');
+        if (!IS_DEV) {
+          createComponent('ui');
+        }
+
         break;
       }
 
