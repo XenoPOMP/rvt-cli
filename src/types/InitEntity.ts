@@ -1,5 +1,5 @@
 export const allowedInitEntities = {
-	'chrome-extension': '',
+  'chrome-extension': '',
 };
 
 export type InitEntity = keyof typeof allowedInitEntities;

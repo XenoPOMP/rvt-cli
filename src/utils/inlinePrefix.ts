@@ -1,39 +1,39 @@
 import { colors } from './colors';
 
 const prefixes: Record<
-	string,
-	{
-		text: string;
-		func: (text: string) => string;
-	}
+  string,
+  {
+    text: string;
+    func: (text: string) => string;
+  }
 > = {
-	missing: {
-		text: 'missing',
-		func: text => {
-			return colors.red(text);
-		},
-	},
+  missing: {
+    text: 'missing',
+    func: text => {
+      return colors.red(text);
+    },
+  },
 
-	warning: {
-		text: 'warning',
-		func: text => {
-			return colors.yellow(text);
-		},
-	},
+  warning: {
+    text: 'warning',
+    func: text => {
+      return colors.yellow(text);
+    },
+  },
 
-	create: {
-		text: 'create',
-		func: text => {
-			return colors.green(text);
-		},
-	},
+  create: {
+    text: 'create',
+    func: text => {
+      return colors.green(text);
+    },
+  },
 
-	update: {
-		text: 'update',
-		func: text => {
-			return colors.cyan(text);
-		},
-	},
+  update: {
+    text: 'update',
+    func: text => {
+      return colors.cyan(text);
+    },
+  },
 };
 
 /**
@@ -43,44 +43,44 @@ const prefixes: Record<
  * @param [prefix]            prefix name ('missing' | 'warning' | 'create' | 'update').
  */
 export const inlinePrefix = (
-	str?: string,
-	prefix?: 'missing' | 'warning' | 'create' | 'update',
+  str?: string,
+  prefix?: 'missing' | 'warning' | 'create' | 'update',
 ): string => {
-	/** Get selected prefix according to arguments. */
-	const selectedPrefix = prefix !== undefined ? prefixes[prefix] : undefined;
+  /** Get selected prefix according to arguments. */
+  const selectedPrefix = prefix !== undefined ? prefixes[prefix] : undefined;
 
-	/** If prefix was selected, inline it. */
-	if (selectedPrefix !== undefined) {
-		const prefixNameList: string[] = Object.keys(prefixes).map(key => {
-			return prefixes[key].text;
-		});
+  /** If prefix was selected, inline it. */
+  if (selectedPrefix !== undefined) {
+    const prefixNameList: string[] = Object.keys(prefixes).map(key => {
+      return prefixes[key].text;
+    });
 
-		/** Calculate maximum prefix name length. */
-		const largestNameLength: number = (() => {
-			let maxLength = 0;
+    /** Calculate maximum prefix name length. */
+    const largestNameLength: number = (() => {
+      let maxLength = 0;
 
-			prefixNameList.forEach(name => {
-				if (name.length > maxLength) {
-					maxLength = name.length;
-				}
-			});
+      prefixNameList.forEach(name => {
+        if (name.length > maxLength) {
+          maxLength = name.length;
+        }
+      });
 
-			return maxLength;
-		})();
+      return maxLength;
+    })();
 
-		/** Generate additional spaces. */
-		const additionalSpaces: string = (() => {
-			if (selectedPrefix.text.length < largestNameLength) {
-				return ' '.repeat(largestNameLength - selectedPrefix.text.length);
-			}
+    /** Generate additional spaces. */
+    const additionalSpaces: string = (() => {
+      if (selectedPrefix.text.length < largestNameLength) {
+        return ' '.repeat(largestNameLength - selectedPrefix.text.length);
+      }
 
-			return '';
-		})();
+      return '';
+    })();
 
-		return selectedPrefix.func(
-			`${additionalSpaces} ${selectedPrefix.text} ${colors.white(str)}`,
-		);
-	}
+    return selectedPrefix.func(
+      `${additionalSpaces} ${selectedPrefix.text} ${colors.white(str)}`,
+    );
+  }
 
-	return `${str}`;
+  return `${str}`;
 };

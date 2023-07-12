@@ -4,7 +4,7 @@
   "singleQuote": true,
   "jsxSingleQuote": true,
   "semi": true,
-  "useTabs": true,
+  "useTabs": false,
   "arrowParens": "avoid",
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
