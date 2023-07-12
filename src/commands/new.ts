@@ -22,9 +22,9 @@ const allowedGeneratingTypes: Record<string, string> = {
 export default class New extends Command {
   static description = 'Generate entity';
 
-  static examples = Object.keys(allowedGeneratingTypes).map(key => {
-    return `<%= config.bin %> <%= command.id %> ${key} NAME - ${allowedGeneratingTypes[key]}`;
-  });
+  static examples = [
+    `<%= config.bin %> <%= command.id %> - generate new entity`,
+  ];
 
   static flags = {};
 

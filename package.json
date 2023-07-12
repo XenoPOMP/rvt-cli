@@ -1,6 +1,6 @@
 {
   "name": "rvt-cli",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "React-vite-template CLI. Powered by oclif framework.",
   "author": "XenoPOMP",
   "bin": {
@@ -73,7 +73,7 @@
     "version": "oclif readme && git add README.md",
     "exec:dev": "yarn build && bin/dev",
     "exec:run": "yarn build && bin/run",
-    "publish": "npm run build && npm publish"
+    "pub": "npm run build && npm publish"
   },
   "engines": {
     "node": ">=12.0.0"
