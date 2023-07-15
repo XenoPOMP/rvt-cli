@@ -17,18 +17,19 @@ export const checkForStructure = (
 } => {
   /** List of entities that have to be checked. */
   const checkingEntities: string[] = [
-    // 'public',
+    '.rvt',
+    'public',
     // Source folders
     'src',
     // Asset folders
     'src/assets',
     'src/assets/components',
     'src/assets/components/ui',
-    // 'src/assets/hooks',
-    // 'src/assets/pages',
-    // 'src/assets/providers',
-    // 'src/assets/redux',
-    // 'src/assets/styles',
+    'src/assets/hooks',
+    'src/assets/pages',
+    'src/assets/providers',
+    'src/assets/redux',
+    'src/assets/styles',
 
     // 'src/media',
   ];
