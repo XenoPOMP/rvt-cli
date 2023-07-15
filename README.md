@@ -19,6 +19,9 @@ Yarn global install util installs libs to Yarn`s special folder, so Node engine 
 So you have to install these packages only by npm.
 
 ## Configuration
+
+Edit ``rvt.cli.config.json`` file inside your project`s root directory.
+
 ```tsx
 interface Configuration {
   componentGeneration?: {
@@ -28,41 +31,8 @@ interface Configuration {
 }
 ```
 
-## Create app
+## Commands
 
-This command is similar to ``create-react-app``, but it creates copy of my template instead.
-
-Syntax:
-```shell
-rvt create-app <NAME>
-```
-
-## Arguments
-
-* NAME - string
-
-## New
-
-This command allows you to generate new entities inside project.
-
-Syntax:
-
-```yarn
-rvt new <TYPE> <NAME> 
-```
-
-### Arguments
-* TYPE - 'component' | 'ui'
-* NAME - string
-
-
-## Init
-
-This command allows you to initialize special types of projects (like Chrome extension) based from your current project.
-
-```yarn
-rvt init <ENTITY>
-```
-### Arguments
-* ENTITY - 'chrome-extension'
-
+* [create-app](./docs/commands/create-app.md)
+* [new](docs/commands/new.md)
+* [init](docs/commands/init.md)
