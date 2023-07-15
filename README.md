@@ -7,6 +7,17 @@ For full help, execute this command:
 rvt --help
 ```
 
+## Install globally
+
+For global usage, install CLI globally:
+```shell
+npm i rvt-cli@latest shelljs -g
+```
+
+Yarn global install util installs libs to Yarn`s special folder, so Node engine can not reach bin folder.
+
+So you have to install these packages only by npm.
+
 ## Configuration
 ```tsx
 interface Configuration {
@@ -16,6 +27,10 @@ interface Configuration {
   };
 }
 ```
+
+## Create app
+
+This command is similar to ``create-react-app``, but it creates copy of my template instead.
 
 ## New
 
