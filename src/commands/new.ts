@@ -1,17 +1,13 @@
-import { Args, Command } from '@oclif/core';
-import { writeFile } from 'fs/promises';
-import * as fs from 'fs';
+import { Command } from '@oclif/core';
 import * as path from 'path';
 
 import { checkForStructure } from '../utils/checkForStructure';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { colors } from '../utils/colors';
 import { config } from '../types/Configuration';
-import { fileExists } from '../utils/fileExists';
-import { createFile } from '../utils/createFile';
-import { IS_DEV } from '../constants/isDev';
 import { inquirer } from '../utils/inquirer';
 import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter';
+import { createEntity } from '../utils/createEntity';
 
 const allowedGeneratingTypes: Record<string, string> = {
   component: 'create new component',
@@ -148,24 +144,24 @@ export default class New extends Command {
       };
     })();
 
-    /** This function creates entity. */
-    const createEntity = (path: string, content: string) => {
-      fileExists(path)
-        .then(() => {
-          writeFile(path, content)
-            .then(() => {
-              this.log(inlinePrefix(path, 'update'));
-            })
-            .catch(this.error);
-        })
-        .catch(() => {
-          createFile(path, content)
-            .then(() => {
-              this.log(inlinePrefix(path, 'create'));
-            })
-            .catch(this.error);
-        });
-    };
+    // /** This function creates entity. */
+    // const createEntity = (path: string, content: string) => {
+    //   fileExists(path)
+    //     .then(() => {
+    //       writeFile(path, content)
+    //         .then(() => {
+    //           this.log(inlinePrefix(path, 'update'));
+    //         })
+    //         .catch(this.error);
+    //     })
+    //     .catch(() => {
+    //       createFile(path, content)
+    //         .then(() => {
+    //           this.log(inlinePrefix(path, 'create'));
+    //         })
+    //         .catch(this.error);
+    //     });
+    // };
 
     /** This function creates components. */
     const createComponent = (
@@ -199,16 +195,22 @@ export default class New extends Command {
       /** Component`s prop interface content. */
       const componentInterfaceContent = `export interface ${getCorrectComponentName()}Props {};`;
 
-      createEntity(generatingPaths[type].main, componentContent);
+      createEntity(generatingPaths[type].main, componentContent, {
+        commandInstance: this,
+      });
 
       /** Generate prop interface according to config. */
       if (config.componentGeneration?.createPropInterface) {
-        createEntity(generatingPaths[type].props, componentInterfaceContent);
+        createEntity(generatingPaths[type].props, componentInterfaceContent, {
+          commandInstance: this,
+        });
       }
 
       /** Generate stylesheet according to config. */
       if (config.componentGeneration?.createScssModule) {
-        createEntity(generatingPaths[type].styles, '');
+        createEntity(generatingPaths[type].styles, '', {
+          commandInstance: this,
+        });
       }
     };
 
@@ -216,7 +218,9 @@ export default class New extends Command {
     const createHook = () => {
       const hookContent = `export const ${name} = () => {};`;
 
-      createEntity(generatingPaths.hook, hookContent);
+      createEntity(generatingPaths.hook, hookContent, {
+        commandInstance: this,
+      });
     };
 
     switch (type) {
