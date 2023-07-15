@@ -7,7 +7,8 @@ import { colors } from '../utils/colors';
 import { config } from '../types/Configuration';
 import { inquirer } from '../utils/inquirer';
 import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter';
-import { createEntity } from '../utils/createEntity';
+import { IS_DEV } from '../constants/isDev';
+import { FileSystemManager } from '../utils/file-system-manager';
 
 const allowedGeneratingTypes: Record<string, string> = {
   component: 'create new component',
@@ -32,6 +33,8 @@ export default class New extends Command {
     const { args, flags } = await this.parse(New);
     // const { type, name } = args;
 
+    const fsManager = new FileSystemManager();
+
     /** Checking for correct structure. */
     const correctChecking: ReturnType<typeof checkForStructure> =
       checkForStructure(PROJECT_DIR);
@@ -46,7 +49,7 @@ export default class New extends Command {
       });
 
       /** Final error message. */
-      this.error('Project structure doesn`t match react-vite-template.');
+      // this.error('Project structure doesn`t match react-vite-template.');
     }
 
     /** Ask for details. */
@@ -195,20 +198,24 @@ export default class New extends Command {
       /** Component`s prop interface content. */
       const componentInterfaceContent = `export interface ${getCorrectComponentName()}Props {};`;
 
-      createEntity(generatingPaths[type].main, componentContent, {
+      fsManager.createEntity(generatingPaths[type].main, componentContent, {
         commandInstance: this,
       });
 
       /** Generate prop interface according to config. */
       if (config.componentGeneration?.createPropInterface) {
-        createEntity(generatingPaths[type].props, componentInterfaceContent, {
-          commandInstance: this,
-        });
+        fsManager.createEntity(
+          generatingPaths[type].props,
+          componentInterfaceContent,
+          {
+            commandInstance: this,
+          },
+        );
       }
 
       /** Generate stylesheet according to config. */
       if (config.componentGeneration?.createScssModule) {
-        createEntity(generatingPaths[type].styles, '', {
+        fsManager.createEntity(generatingPaths[type].styles, '', {
           commandInstance: this,
         });
       }
@@ -218,10 +225,14 @@ export default class New extends Command {
     const createHook = () => {
       const hookContent = `export const ${name} = () => {};`;
 
-      createEntity(generatingPaths.hook, hookContent, {
+      fsManager.createEntity(generatingPaths.hook, hookContent, {
         commandInstance: this,
       });
     };
+
+    if (IS_DEV) {
+      return;
+    }
 
     switch (type) {
       case 'component': {

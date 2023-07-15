@@ -1,6 +1,7 @@
 import { Args, Command, Flags } from '@oclif/core';
 import * as path from 'path';
 import { writeFile } from 'fs/promises';
+import * as fs from 'fs';
 
 import { allowedInitEntities, InitEntity } from '../types/InitEntity';
 import {
@@ -8,13 +9,11 @@ import {
   Permission,
   Permissions,
 } from '../types/ChromeExtManifest';
-import { fileExists } from '../utils/fileExists';
 import { inlinePrefix } from '../utils/inlinePrefix';
-import { createFile } from '../utils/createFile';
 import { colors } from '../utils/colors';
-import * as fs from 'fs';
 import { IS_DEV } from '../constants/isDev';
 import { inquirer } from '../utils/inquirer';
+import { FileSystemManager } from '../utils/file-system-manager';
 
 export default class Init extends Command {
   static description = 'describe the command here';
@@ -39,6 +38,8 @@ export default class Init extends Command {
     const entityTypeArg: InitEntity = args.entity as InitEntity;
 
     const PROJECT_DIR = process.cwd();
+
+    const fsManager = new FileSystemManager();
 
     switch (entityTypeArg) {
       case 'chrome-extension': {
@@ -163,7 +164,8 @@ export default class Init extends Command {
             .catch(err => this.error(err));
 
           /** Create or update manifest file. */
-          fileExists(pathToManifest)
+          fsManager
+            .fileExists(pathToManifest)
             .then(() =>
               writeFile(pathToManifest, JSON.stringify(manifest, null, 2))
                 .then(() =>
@@ -172,7 +174,8 @@ export default class Init extends Command {
                 .catch(err => this.error(err)),
             )
             .catch(() =>
-              createFile(pathToManifest, JSON.stringify(manifest, null, 2))
+              fsManager
+                .createFile(pathToManifest, JSON.stringify(manifest, null, 2))
                 .then(() =>
                   this.log(inlinePrefix(`${pathToManifest}`, 'create')),
                 )
