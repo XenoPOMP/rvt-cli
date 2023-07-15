@@ -18,6 +18,11 @@ Yarn global install util installs libs to Yarn`s special folder, so Node engine 
 
 So you have to install these packages only by npm.
 
+## Check installation
+```shell
+rvt version
+```
+
 ## Configuration
 
 Edit ``rvt.cli.config.json`` file inside your project`s root directory.
