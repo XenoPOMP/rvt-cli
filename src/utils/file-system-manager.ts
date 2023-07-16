@@ -1,6 +1,7 @@
+import { Command } from '@oclif/core';
 import * as fs from 'fs';
 import * as shell from 'shelljs';
-import { Command } from '@oclif/core';
+
 import { unlink, writeFile } from 'fs/promises';
 
 import { inlinePrefix } from './inlinePrefix';
@@ -59,7 +60,7 @@ export class FileSystemManager {
     options: {
       commandInstance: Command;
       noLog?: boolean;
-    },
+    }
   ) => {
     const logger = options.commandInstance;
 
@@ -69,7 +70,7 @@ export class FileSystemManager {
           .then(() => {
             if (!options?.noLog) {
               logger.log(
-                inlinePrefix(this.getNestedPath(process.cwd(), path), 'update'),
+                inlinePrefix(this.getNestedPath(process.cwd(), path), 'update')
               );
             }
           })
@@ -80,7 +81,7 @@ export class FileSystemManager {
           .then(() => {
             if (!options?.noLog) {
               logger.log(
-                inlinePrefix(this.getNestedPath(process.cwd(), path), 'create'),
+                inlinePrefix(this.getNestedPath(process.cwd(), path), 'create')
               );
             }
           })
@@ -96,7 +97,7 @@ export class FileSystemManager {
    */
   public createDir = (
     path: string,
-    options?: Parameters<typeof fs.mkdirSync>[1],
+    options?: Parameters<typeof fs.mkdirSync>[1]
   ): Promise<boolean | void> => {
     return this.fileExists(path).catch(() => {
       fs.mkdirSync(path, options);

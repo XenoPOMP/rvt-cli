@@ -18,8 +18,8 @@ export default class Version extends Command {
 
     this.log(
       `${colors.gray('Current installed version of rvt-cli: ')}${colors.green(
-        packageJsonFile.version,
-      )}`,
+        packageJsonFile.version
+      )}`
     );
   }
 }

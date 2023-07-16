@@ -44,7 +44,7 @@ const prefixes: Record<
  */
 export const inlinePrefix = (
   str?: string,
-  prefix?: 'missing' | 'warning' | 'create' | 'update',
+  prefix?: 'missing' | 'warning' | 'create' | 'update'
 ): string => {
   /** Get selected prefix according to arguments. */
   const selectedPrefix = prefix !== undefined ? prefixes[prefix] : undefined;
@@ -78,7 +78,7 @@ export const inlinePrefix = (
     })();
 
     return selectedPrefix.func(
-      `${additionalSpaces} ${selectedPrefix.text} ${colors.white(str)}`,
+      `${additionalSpaces} ${selectedPrefix.text} ${colors.white(str)}`
     );
   }
 

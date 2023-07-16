@@ -44,8 +44,8 @@ export default class CreateApp extends Command {
     if (!isValid(normalizedName)) {
       this.error(
         `${colors.red('Given path')} ${colors.green(
-          colors.italic(normalizedName),
-        )} ${colors.red('is not valid.')}`,
+          colors.italic(normalizedName)
+        )} ${colors.red('is not valid.')}`
       );
     }
 
@@ -68,7 +68,7 @@ export default class CreateApp extends Command {
       .on('close', () => {
         const generatedPackageJson = require(path.join(
           PATHS.root,
-          'package.json',
+          'package.json'
         ));
 
         const { version } = generatedPackageJson;
@@ -76,9 +76,9 @@ export default class CreateApp extends Command {
         this.log(
           colors.italic(
             `Successfully generated ${colors.green(
-              'react-vite-template',
-            )} ${colors.yellow(version)}`,
-          ),
+              'react-vite-template'
+            )} ${colors.yellow(version)}`
+          )
         );
       });
   }

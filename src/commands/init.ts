@@ -1,19 +1,19 @@
 import { Args, Command, Flags } from '@oclif/core';
-import * as path from 'path';
-import { writeFile } from 'fs/promises';
 import * as fs from 'fs';
+import * as path from 'path';
 
-import { allowedInitEntities, InitEntity } from '../types/InitEntity';
+import { IS_DEV } from '../constants/isDev';
 import {
   ChromeExtManifest,
   Permission,
   Permissions,
 } from '../types/ChromeExtManifest';
-import { inlinePrefix } from '../utils/inlinePrefix';
+import { InitEntity, allowedInitEntities } from '../types/InitEntity';
 import { colors } from '../utils/colors';
-import { IS_DEV } from '../constants/isDev';
-import { inquirer } from '../utils/inquirer';
 import { FileSystemManager } from '../utils/file-system-manager';
+import { inlinePrefix } from '../utils/inlinePrefix';
+import { inquirer } from '../utils/inquirer';
+import { writeFile } from 'fs/promises';
 
 export default class Init extends Command {
   static description = 'describe the command here';
@@ -143,7 +143,7 @@ export default class Init extends Command {
         /** Confirmation. */
         const confirm: boolean = await inquirer.confirm({
           message: `Confirm ${colors.green(
-            `${manifest.name}@${manifest.version}`,
+            `${manifest.name}@${manifest.version}`
           )}?`,
         });
         /** Close CLI if not confirmed. */
@@ -158,7 +158,7 @@ export default class Init extends Command {
           /** Update package json. Add new scripts. */
           writeFile(
             path.join(PROJECT_DIR, './package.json'),
-            JSON.stringify(packageJson, null, 2),
+            JSON.stringify(packageJson, null, 2)
           )
             .then(() => this.log(inlinePrefix('package.json', 'update')))
             .catch(err => this.error(err));
@@ -169,17 +169,17 @@ export default class Init extends Command {
             .then(() =>
               writeFile(pathToManifest, JSON.stringify(manifest, null, 2))
                 .then(() =>
-                  this.log(inlinePrefix(`${pathToManifest}`, 'update')),
+                  this.log(inlinePrefix(`${pathToManifest}`, 'update'))
                 )
-                .catch(err => this.error(err)),
+                .catch(err => this.error(err))
             )
             .catch(() =>
               fsManager
                 .createFile(pathToManifest, JSON.stringify(manifest, null, 2))
                 .then(() =>
-                  this.log(inlinePrefix(`${pathToManifest}`, 'create')),
+                  this.log(inlinePrefix(`${pathToManifest}`, 'create'))
                 )
-                .catch(err => this.error(err)),
+                .catch(err => this.error(err))
             );
         }
       }

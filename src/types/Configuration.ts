@@ -25,7 +25,7 @@ export const config: Configuration = (() => {
   if (fs.existsSync(path.join(PROJECT_DIR, 'rvt.cli.config.json'))) {
     const preloadedConfig = require(path.join(
       PROJECT_DIR,
-      'rvt.cli.config.json',
+      'rvt.cli.config.json'
     ));
 
     defaultConfig = { ...defaultConfig, ...preloadedConfig };

@@ -1,14 +1,14 @@
 import { Command } from '@oclif/core';
 import * as path from 'path';
 
-import { checkForStructure } from '../utils/checkForStructure';
-import { inlinePrefix } from '../utils/inlinePrefix';
-import { colors } from '../utils/colors';
-import { config } from '../types/Configuration';
-import { inquirer } from '../utils/inquirer';
-import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter';
 import { IS_DEV } from '../constants/isDev';
+import { config } from '../types/Configuration';
+import { capitalizeFirstLetter } from '../utils/capitalizeFirstLetter';
+import { checkForStructure } from '../utils/checkForStructure';
+import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
+import { inlinePrefix } from '../utils/inlinePrefix';
+import { inquirer } from '../utils/inquirer';
 
 const allowedGeneratingTypes: Record<string, string> = {
   component: 'create new component',
@@ -82,9 +82,9 @@ export default class New extends Command {
       /** Wrong pattern provided. */
       if (!/^([A-Z][a-z]*)+$/.test(name)) {
         const warningMessage = `Name doesn\`t satisfy template (${colors.italic(
-          `${correctedName}`,
+          `${correctedName}`
         )} expected, but ${colors.italic(
-          name,
+          name
         )} provided). Formatted variant will be used.`;
 
         this.log(inlinePrefix(warningMessage, 'warning'));
@@ -106,7 +106,7 @@ export default class New extends Command {
     /** Paths of generating files. */
     const generatingPaths = ((
       cwd = PROJECT_DIR,
-      name = getCorrectComponentName(),
+      name = getCorrectComponentName()
     ) => {
       return {
         component: {
@@ -115,32 +115,32 @@ export default class New extends Command {
           styles: path.join(
             cwd,
             'src/assets/components',
-            `${name}/${name}.module.scss`,
+            `${name}/${name}.module.scss`
           ),
 
           props: path.join(
             cwd,
             'src/assets/components',
-            `${name}/${name}.props.ts`,
+            `${name}/${name}.props.ts`
           ),
         },
         ui: {
           main: path.join(
             cwd,
             'src/assets/components/ui',
-            `${name}/${name}.tsx`,
+            `${name}/${name}.tsx`
           ),
 
           styles: path.join(
             cwd,
             'src/assets/components/ui',
-            `${name}/${name}.module.scss`,
+            `${name}/${name}.module.scss`
           ),
 
           props: path.join(
             cwd,
             'src/assets/components/ui',
-            `${name}/${name}.props.ts`,
+            `${name}/${name}.props.ts`
           ),
         },
         hook: path.join(cwd, 'src/assets/hooks', `${getCorrectHookName()}.ts`),
@@ -168,7 +168,7 @@ export default class New extends Command {
 
     /** This function creates components. */
     const createComponent = (
-      type: keyof Pick<typeof generatingPaths, 'component' | 'ui'>,
+      type: keyof Pick<typeof generatingPaths, 'component' | 'ui'>
     ) => {
       /** Content of generated component. */
       const componentContent: string = [
@@ -209,7 +209,7 @@ export default class New extends Command {
           componentInterfaceContent,
           {
             commandInstance: this,
-          },
+          }
         );
       }
 

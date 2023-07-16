@@ -10,7 +10,7 @@ import * as path from 'path';
  * @return {boolean}             true if structure is correct.
  */
 export const checkForStructure = (
-  cwd: string,
+  cwd: string
 ): {
   correct: boolean;
   missing?: string[];

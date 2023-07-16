@@ -1,8 +1,8 @@
-import input from '@inquirer/input';
 import checkbox from '@inquirer/checkbox';
-import select from '@inquirer/select';
 import confirm from '@inquirer/confirm';
+import input from '@inquirer/input';
 import password from '@inquirer/password';
+import select from '@inquirer/select';
 
 interface Inquirer {
   /**
