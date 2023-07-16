@@ -24,3 +24,4 @@ oclif.manifest.json
 **/src/assets
 **/src/manifests
 dev
+.rvt
