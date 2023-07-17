@@ -2,8 +2,9 @@ import { Args, Command, Flags } from '@oclif/core';
 import * as path from 'path';
 
 import { IS_DEV } from '../constants/isDev';
+import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
-import { readdir } from 'fs/promises';
+import { readFile, readdir } from 'fs/promises';
 
 const shell = require('shelljs');
 
@@ -55,22 +56,49 @@ export default class Link extends Command {
 
                   const localeName = file.replace(/.ts$/i, '');
 
-                  const localeBody = require(pathToLocale)[localeName];
-
                   const outputPath = path.join(
                     PATHS.localizationOutput,
                     localeName,
                     'messages.json'
                   );
 
-                  /** Write localization file. */
-                  fsManager.createEntity(
-                    outputPath,
-                    JSON.stringify(localeBody, null, 2),
-                    {
-                      commandInstance: this,
-                    }
-                  );
+                  readFile(pathToLocale, {
+                    encoding: 'utf-8',
+                  })
+                    .then(text => {
+                      const replacePattern = new RegExp(
+                        `(import .*$)|(export const ${localeName}Locales.*$(\n.*$)*)`,
+                        'gim'
+                      );
+
+                      return text.replace(replacePattern, '');
+                    })
+                    .then(text => {
+                      return text.replace(
+                        new RegExp(`(^export.*$)|(^\};$)`, 'gim'),
+                        ''
+                      );
+                    })
+                    .then(text => {
+                      return text
+                        .replace(/['`]/gi, '"')
+                        .replace(/\n{2,}/gi, '')
+                        .replace(/\w+(?=:)/gi, oldValue => {
+                          return `"${oldValue.replace(/:$/gi, '')}"`;
+                        })
+                        .replace(/\n/gi, ' ')
+                        .replace(/\s{2,}/gi, ' ')
+                        .replace(/,\s},$/gi, ' }');
+                    })
+                    .then(text => `{ ${text.replace(/,$/gi, '')} }`)
+                    .then(modifiedText => {
+                      const toJson = JSON.parse(modifiedText);
+                      const jsonText = JSON.stringify(toJson, null, 2);
+
+                      fsManager.createEntity(outputPath, jsonText, {
+                        commandInstance: this,
+                      });
+                    });
                 });
             });
           })
