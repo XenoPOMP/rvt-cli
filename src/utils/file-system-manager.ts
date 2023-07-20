@@ -56,7 +56,7 @@ export class FileSystemManager {
    */
   public createEntity = (
     path: string,
-    content: string,
+    content: string | object,
     options: {
       commandInstance: Command;
       noLog?: boolean;
@@ -64,9 +64,12 @@ export class FileSystemManager {
   ) => {
     const logger = options.commandInstance;
 
+    const fileContent: string =
+      typeof content === 'string' ? content : JSON.stringify(content, null, 2);
+
     this.fileExists(path)
       .then(() => {
-        writeFile(path, content)
+        writeFile(path, fileContent)
           .then(() => {
             if (!options?.noLog) {
               logger.log(
@@ -77,7 +80,7 @@ export class FileSystemManager {
           .catch(logger.error);
       })
       .catch(() => {
-        this.createFile(path, content)
+        this.createFile(path, fileContent)
           .then(() => {
             if (!options?.noLog) {
               logger.log(

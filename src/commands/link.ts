@@ -9,7 +9,7 @@ import { readFile, readdir } from 'fs/promises';
 const shell = require('shelljs');
 
 export default class Link extends Command {
-  static description = 'describe the command here';
+  static description = 'link entities inside project';
 
   static examples = [
     '<%= config.bin %> <%= command.id %> locales - link locales in Chrome Extension project',

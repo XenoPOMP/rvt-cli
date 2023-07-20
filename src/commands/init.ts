@@ -16,7 +16,8 @@ import { inquirer } from '../utils/inquirer';
 import { writeFile } from 'fs/promises';
 
 export default class Init extends Command {
-  static description = 'describe the command here';
+  static description =
+    'initialize some specific project types (Chrome ext. etc.)';
 
   static examples = [
     '<%= config.bin %> <%= command.id %> ENTITY - init certain entity.',

@@ -41,3 +41,4 @@ interface Configuration {
 * [create-app](./docs/commands/create-app.md)
 * [new](docs/commands/new.md)
 * [init](docs/commands/init.md)
+* [chrome](docs/commands/chrome.md)

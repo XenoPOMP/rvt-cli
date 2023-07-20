@@ -6,7 +6,7 @@ import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
 
 export default class CreateApp extends Command {
-  static description = 'describe the command here';
+  static description = 'create new React-vite-template app';
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
