@@ -2,6 +2,8 @@ import { Args, Command, Flags } from '@oclif/core';
 import * as path from 'path';
 
 import { IS_DEV } from '../constants/isDev';
+import { WORKING_PATHS } from '../constants/workingPaths';
+import { ChromeExtManifest } from '../types/ChromeExtManifest';
 import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
 import { readFile, readdir } from 'fs/promises';
@@ -13,6 +15,7 @@ export default class Link extends Command {
 
   static examples = [
     '<%= config.bin %> <%= command.id %> locales - link locales in Chrome Extension project',
+    '<%= config.bin %> <%= command.id %> version - link version from Redux store in Chrome Extension project',
   ];
 
   static flags = {};
@@ -21,7 +24,7 @@ export default class Link extends Command {
     type: Args.string({
       description: 'type of linking entity',
       required: true,
-      options: ['locales'],
+      options: ['locales', 'version'],
     }),
   };
 
@@ -35,6 +38,11 @@ export default class Link extends Command {
       return {
         localization: path.join(cwd, 'src/assets/localization'),
         localizationOutput: path.join(cwd, '.rvt/manifests/chrome/_locales'),
+        reduxStore: path.join(cwd, 'src/assets/redux'),
+        manifest: path.join(
+          WORKING_PATHS.rvtLib,
+          'manifests/chrome/manifest.json'
+        ),
       };
     })();
 
@@ -42,8 +50,6 @@ export default class Link extends Command {
       case 'locales': {
         await Promise.all([fsManager.fileExists(PATHS.localization)])
           .then(() => {
-            this.log('All directories exist.');
-
             readdir(path.join(PATHS.localization, 'locales')).then(files => {
               files
                 .filter(file => !/.*.js/gi.test(file))
@@ -106,6 +112,39 @@ export default class Link extends Command {
             this.error('Localization files are not created.');
           });
         break;
+      }
+
+      case 'version': {
+        await Promise.all([
+          fsManager.fileExists(
+            path.join(PATHS.reduxStore, 'reducers/appSettingsSlice.ts')
+          ),
+        ])
+          .then(() => {
+            readFile(
+              path.join(PATHS.reduxStore, 'reducers/appSettingsSlice.ts'),
+              {
+                encoding: 'utf-8',
+              }
+            ).then(text => {
+              const versionFromText = (
+                text
+                  .split(/(appVersion: '.*')/gi)
+                  .filter(part => /appVersion: '.*'/gi.test(part))
+                  .at(0) as string
+              ).replace(/(^appVersion: ')|('$)/gi, '');
+
+              const manifest: ChromeExtManifest = require(PATHS.manifest);
+              manifest.version = versionFromText;
+
+              fsManager.createEntity(PATHS.manifest, manifest, {
+                commandInstance: this,
+              });
+            });
+          })
+          .catch(() => {
+            this.error('Didn`t found appSettings slice.');
+          });
       }
     }
   }
