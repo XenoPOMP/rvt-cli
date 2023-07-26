@@ -1,8 +1,10 @@
 import { Args, Command, Flags } from '@oclif/core';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as shell from 'shelljs';
 
 import { IS_DEV } from '../constants/isDev';
+import { WORKING_PATHS } from '../constants/workingPaths';
 import {
   ChromeExtManifest,
   Permission,
@@ -136,10 +138,26 @@ export default class Init extends Command {
         const packageJson = require(path.join(PROJECT_DIR, './package.json'));
 
         /** Re-define scripts. */
+        /** Dev script. */
+        packageJson.scripts[
+          'dev'
+        ] = `concurrently \"vite\" \"yarn watch:metadata\"`;
+        /** Build script. */
         packageJson.scripts['build'] = 'tsc && vite build && yarn afterbuild';
+        /** Link project locales, version etc. */
+        packageJson.scripts['link:project'] =
+          'concurrently ' +
+          ['rvt link locales', 'rvt link version']
+            .map(command => `\"${command}\"`)
+            .join(' ');
+        /** After-build script. */
         packageJson.scripts[
           'afterbuild'
-        ] = `copy \"${relativePathToManifest}\" dist`;
+        ] = `yarn link:project && xcopy /s /v /y \\".rvt\\\\manifests\\\\chrome\\\\*\\" \"dist\"`;
+        /** Watch metadata script. */
+        packageJson.scripts[
+          'watch:metadata'
+        ] = `nodemon --exec \"yarn afterbuild\" --watch src --ext \"ts\"`;
 
         /** Confirmation. */
         const confirm: boolean = await inquirer.confirm({
@@ -152,9 +170,18 @@ export default class Init extends Command {
           this.exit(1);
         }
 
+        const localizationPaths = {
+          source: path.join(__dirname, 'resources/localization'),
+          destination: WORKING_PATHS.localization,
+        };
+
         /** Dev mode code. */
-        if (IS_DEV) {
-          console.log(manifest);
+        if (IS_DEV || true) {
+          console.log({
+            manifest,
+            packageJson,
+            localizationPaths,
+          });
         } /** Non-dev code. Writing files. */ else {
           /** Update package json. Add new scripts. */
           writeFile(
@@ -182,6 +209,11 @@ export default class Init extends Command {
                 )
                 .catch(err => this.error(err))
             );
+
+          /** Install additional deps. */
+          shell.exec(
+            'yarn add ' + ['concurrently', 'nodemon', 'shx'].join(' ') + ' -D'
+          );
         }
       }
     }
