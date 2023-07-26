@@ -205,23 +205,6 @@ export default class Init extends Command {
                 .catch(err => this.error(err))
             );
 
-          /** Copy localization. */
-          rm(localizationPaths.destination, {
-            recursive: true,
-            force: true,
-          })
-            .catch(reason => {
-              this.error(`Failed to delete directory (${reason})`);
-            })
-            .finally(() => {
-              shell.exec(
-                `copy \"${localizationPaths.source}\" \"${path.join(
-                  localizationPaths.destination,
-                  '../'
-                )}\"`
-              );
-            });
-
           /** Install additional deps. */
           shell.exec(
             'yarn add ' + ['concurrently', 'nodemon', 'shx'].join(' ') + ' -D'
