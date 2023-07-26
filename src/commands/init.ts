@@ -210,8 +210,8 @@ export default class Init extends Command {
             recursive: true,
             force: true,
           })
-            .catch(() => {
-              this.error('Failed to delete directory');
+            .catch(reason => {
+              this.error(`Failed to delete directory (${reason})`);
             })
             .finally(() => {
               shell.exec(
