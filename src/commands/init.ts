@@ -1,21 +1,16 @@
-import { Args, Command, Flags } from '@oclif/core';
-import * as fs from 'fs';
+import { Args, Command } from '@oclif/core';
 import * as path from 'path';
 import * as shell from 'shelljs';
 
 import { IS_DEV } from '../constants/isDev';
 import { WORKING_PATHS } from '../constants/workingPaths';
-import {
-  ChromeExtManifest,
-  Permission,
-  Permissions,
-} from '../types/ChromeExtManifest';
+import { ChromeExtManifest, Permissions } from '../types/ChromeExtManifest';
 import { InitEntity, allowedInitEntities } from '../types/InitEntity';
 import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { inquirer } from '../utils/inquirer';
-import { rmdir, unlink, writeFile } from 'fs/promises';
+import { rm, writeFile } from 'fs/promises';
 
 export default class Init extends Command {
   static description =
@@ -211,7 +206,10 @@ export default class Init extends Command {
             );
 
           /** Copy localization. */
-          rmdir(localizationPaths.destination)
+          rm(localizationPaths.destination, {
+            recursive: true,
+            force: true,
+          })
             .catch(() => {
               this.error('Failed to delete directory');
             })
