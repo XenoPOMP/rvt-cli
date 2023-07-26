@@ -32,10 +32,6 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
-      - name: Build types
-        run: |
-          yarn build
-
       - name: Publish to npm registry
         run: npm publish
 
