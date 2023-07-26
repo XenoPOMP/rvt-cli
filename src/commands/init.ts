@@ -211,7 +211,7 @@ export default class Init extends Command {
             );
 
           /** Copy localization. */
-          shell.rm(localizationPaths.destination);
+          shell.exec(`rm --rf "${localizationPaths.destination}"`);
           shell.exec(
             `copy \"${localizationPaths.source}\" \"${path.join(
               localizationPaths.destination,
