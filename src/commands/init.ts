@@ -176,7 +176,7 @@ export default class Init extends Command {
         };
 
         /** Dev mode code. */
-        if (IS_DEV || true) {
+        if (IS_DEV) {
           console.log({
             manifest,
             packageJson,
@@ -209,6 +209,15 @@ export default class Init extends Command {
                 )
                 .catch(err => this.error(err))
             );
+
+          /** Copy localization. */
+          shell.rm(localizationPaths.destination);
+          shell.exec(
+            `copy \"${localizationPaths.source}\" \"${path.join(
+              localizationPaths.destination,
+              '../'
+            )}\"`
+          );
 
           /** Install additional deps. */
           shell.exec(
