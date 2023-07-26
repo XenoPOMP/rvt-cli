@@ -15,7 +15,7 @@ import { colors } from '../utils/colors';
 import { FileSystemManager } from '../utils/file-system-manager';
 import { inlinePrefix } from '../utils/inlinePrefix';
 import { inquirer } from '../utils/inquirer';
-import { writeFile } from 'fs/promises';
+import { rmdir, unlink, writeFile } from 'fs/promises';
 
 export default class Init extends Command {
   static description =
@@ -211,13 +211,18 @@ export default class Init extends Command {
             );
 
           /** Copy localization. */
-          shell.exec(`rm --rf "${localizationPaths.destination}"`);
-          shell.exec(
-            `copy \"${localizationPaths.source}\" \"${path.join(
-              localizationPaths.destination,
-              '../'
-            )}\"`
-          );
+          rmdir(localizationPaths.destination)
+            .catch(() => {
+              this.error('Failed to delete directory');
+            })
+            .finally(() => {
+              shell.exec(
+                `copy \"${localizationPaths.source}\" \"${path.join(
+                  localizationPaths.destination,
+                  '../'
+                )}\"`
+              );
+            });
 
           /** Install additional deps. */
           shell.exec(
