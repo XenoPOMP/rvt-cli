@@ -96,6 +96,7 @@ export default class Link extends Command {
                         .replace(/\s{2,}/gi, ' ')
                         .replace(/,\s},$/gi, ' }');
                     })
+                    .then(text => text.replace(/\/\/ prettier-ignore/gi, ''))
                     .then(text => `{ ${text.replace(/,$/gi, '')} }`)
                     .then(modifiedText => {
                       const toJson = JSON.parse(modifiedText);
