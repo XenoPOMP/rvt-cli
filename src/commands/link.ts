@@ -100,7 +100,10 @@ export default class Link extends Command {
                     .then(text => `{ ${text.replace(/,$/gi, '')} }`)
                     .then(modifiedText => {
                       const toJson = JSON.parse(modifiedText);
-                      const jsonText = JSON.stringify(toJson, null, 2);
+                      const jsonText = JSON.stringify(toJson, null, 2).replace(
+                        '&ddt',
+                        ':'
+                      );
 
                       fsManager.createEntity(outputPath, jsonText, {
                         commandInstance: this,
