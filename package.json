@@ -15,7 +15,7 @@
     "/dist",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json",
-    "resources"
+    "src/exports"
   ],
   "dependencies": {
     "@inquirer/checkbox": "^1.3.3",
