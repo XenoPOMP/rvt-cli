@@ -101,7 +101,7 @@ export default class Link extends Command {
                     .then(modifiedText => {
                       const toJson = JSON.parse(modifiedText);
                       const jsonText = JSON.stringify(toJson, null, 2).replace(
-                        '&ddt',
+                        /\&ddt/gi,
                         ':'
                       );
 
