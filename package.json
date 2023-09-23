@@ -32,7 +32,7 @@
     "rm-dir": "^0.2.2"
   },
   "devDependencies": {
-    "@oclif/test": "^2.3.25",
+    "@oclif/test": "^2.5.5",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/chai": "^4",
     "@types/inquirer": "^9.0.3",
